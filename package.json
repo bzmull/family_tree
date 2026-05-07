@@ -14,9 +14,11 @@
     "validate": "node scripts/validate-schema.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "family-chart": "^0.9.0",
     "fuse.js": "^7.3.0",
     "html2canvas": "^1.4.1",
+    "jsonwebtoken": "^9.0.3",
     "jspdf": "^4.2.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
