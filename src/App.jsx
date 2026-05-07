@@ -8,6 +8,7 @@ import { PasswordGate } from './components/auth/PasswordGate'
 import { FamilyTree } from './components/tree/FamilyTree'
 import { BranchFilter } from './components/tree/BranchFilter'
 import { TreeControls } from './components/tree/TreeControls'
+import { EditModal } from './components/editor/EditModal'
 import './App.css'
 
 function AppInner() {
@@ -49,6 +50,14 @@ function AppInner() {
         <div className="app-header-right">
           {isEditor && (
             <button
+              className="header-btn header-btn--add"
+              onClick={() => setEditingPersonId('__new__')}
+            >
+              + Add Person
+            </button>
+          )}
+          {isEditor && (
+            <button
               className="header-btn header-btn--save"
               onClick={save}
               disabled={saving}
@@ -88,6 +97,7 @@ function AppInner() {
           />
         </div>
       </div>
+      <EditModal />
     </div>
   )
 }

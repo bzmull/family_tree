@@ -88,6 +88,8 @@ body {
 .header-btn:hover:not(:disabled) { background: #475569; }
 .header-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.header-btn--add { background: #0f4c81; border-color: #1e6fbf; color: #93c5fd; }
+.header-btn--add:hover { background: #1e6fbf; color: #fff; }
 .header-btn--save { background: #7c3aed; border-color: #6d28d9; }
 .header-btn--save:hover:not(:disabled) { background: #6d28d9; }
 

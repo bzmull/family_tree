@@ -1,0 +1,97 @@
+.re-editor { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.re-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.re-empty { color: #64748b; font-size: 0.85rem; }
+
+.re-item {
+  align-items: center;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+}
+
+.re-desc { color: #cbd5e1; font-size: 0.85rem; }
+
+.re-remove {
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.3rem;
+  transition: color 0.15s;
+}
+.re-remove:hover { color: #f87171; }
+
+.re-add-btn {
+  background: none;
+  border: 1px dashed #334155;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.4rem;
+  text-align: center;
+  transition: all 0.15s;
+}
+.re-add-btn:hover { border-color: #7c3aed; color: #a78bfa; }
+
+.re-add-form { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.re-select, .re-search {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #f1f5f9;
+  font-size: 0.85rem;
+  outline: none;
+  padding: 0.45rem 0.6rem;
+  width: 100%;
+}
+.re-select:focus, .re-search:focus { border-color: #7c3aed; }
+
+.re-label { color: #94a3b8; font-size: 0.75rem; display: block; margin-bottom: 0.25rem; }
+
+.re-results {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.re-result {
+  background: none;
+  border: none;
+  border-bottom: 1px solid #1e293b;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  transition: background 0.1s;
+}
+.re-result:last-child { border-bottom: none; }
+.re-result:hover, .re-result.selected { background: #1e293b; color: #f1f5f9; }
+
+.re-add-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+
+.re-cancel, .re-confirm {
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid;
+  transition: background 0.15s;
+}
+.re-cancel { background: transparent; border-color: #334155; color: #94a3b8; }
+.re-cancel:hover { background: #1e293b; }
+.re-confirm { background: #7c3aed; border-color: #6d28d9; color: #fff; }
+.re-confirm:hover:not(:disabled) { background: #6d28d9; }
+.re-confirm:disabled { opacity: 0.4; cursor: not-allowed; }

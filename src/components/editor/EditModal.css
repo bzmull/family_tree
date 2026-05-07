@@ -1,0 +1,113 @@
+.em-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  position: fixed;
+  z-index: 40;
+}
+
+.em-panel {
+  background: #1e293b;
+  border-left: 1px solid #334155;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 400px;
+  max-width: 100vw;
+  z-index: 50;
+  animation: slide-in 0.2s ease-out;
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.em-header {
+  align-items: center;
+  border-bottom: 1px solid #334155;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.em-title {
+  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.em-close {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 1rem;
+  flex-shrink: 0;
+  padding: 0.25rem;
+  transition: color 0.15s;
+}
+.em-close:hover { color: #f1f5f9; }
+
+.em-tabs {
+  border-bottom: 1px solid #334155;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.em-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  transition: all 0.15s;
+}
+.em-tab:hover { color: #f1f5f9; }
+.em-tab.active { border-bottom-color: #7c3aed; color: #f1f5f9; }
+
+.em-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.em-new-note {
+  color: #64748b;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.em-footer {
+  border-top: 1px solid #334155;
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem;
+}
+
+.em-btn {
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: 1px solid;
+  transition: background 0.15s;
+}
+.em-btn--cancel { background: transparent; border-color: #334155; color: #94a3b8; }
+.em-btn--cancel:hover { background: #0f172a; }
+.em-btn--save { background: #7c3aed; border-color: #6d28d9; color: #fff; }
+.em-btn--save:hover:not(:disabled) { background: #6d28d9; }
+.em-btn--save:disabled { opacity: 0.4; cursor: not-allowed; }
