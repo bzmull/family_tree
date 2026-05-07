@@ -48,9 +48,11 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     }
   }, [])
 
-  // Mount chart once
+  const hasData = (nodes?.length ?? 0) > 0
+
+  // Mount chart once data is first available
   useEffect(() => {
-    if (!containerRef.current || !nodes?.length) return
+    if (!containerRef.current || !hasData || chartRef.current) return
 
     const chart = createChart(containerRef.current, nodes)
     const card = chart.setCardHtml()
@@ -71,7 +73,7 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
       chartRef.current = null
       if (containerRef.current) containerRef.current.innerHTML = ''
     }
-  }, []) // mount once — data updates handled below
+  }, [hasData]) // re-run when data first arrives
 
   // Update data when nodes change
   useEffect(() => {

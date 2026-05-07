@@ -14,9 +14,9 @@ import { SearchBar } from './components/search/SearchBar'
 import { ExportPanel } from './components/export/ExportPanel'
 import './App.css'
 
-function AppInner() {
+function AppInner({ auth }) {
   const { liveData, setEditingPersonId } = useFamilyData()
-  const { token, isEditor, logout } = useAuth()
+  const { token, isEditor, logout } = auth
   const [activeBranch, setActiveBranch] = useState('all')
   const [rootPersonId, setRootPersonId] = useState(null)
   const { save, saving, saveError, lastSavedAt } = useSave(token)
@@ -121,7 +121,7 @@ export default function App() {
 
   return (
     <FamilyDataProvider>
-      <AppInner />
+      <AppInner auth={auth} />
     </FamilyDataProvider>
   )
 }
