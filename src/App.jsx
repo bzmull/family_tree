@@ -8,7 +8,10 @@ import { PasswordGate } from './components/auth/PasswordGate'
 import { FamilyTree } from './components/tree/FamilyTree'
 import { BranchFilter } from './components/tree/BranchFilter'
 import { TreeControls } from './components/tree/TreeControls'
+import { TreeErrorBoundary } from './components/tree/TreeErrorBoundary'
 import { EditModal } from './components/editor/EditModal'
+import { SearchBar } from './components/search/SearchBar'
+import { ExportPanel } from './components/export/ExportPanel'
 import './App.css'
 
 function AppInner() {
@@ -46,8 +49,13 @@ function AppInner() {
             activeBranch={activeBranch}
             onChange={setActiveBranch}
           />
+          <SearchBar
+            activeBranch={activeBranch}
+            onSelect={(id) => setRootPersonId(id)}
+          />
         </div>
         <div className="app-header-right">
+          <ExportPanel />
           {isEditor && (
             <button
               className="header-btn header-btn--add"
@@ -77,6 +85,7 @@ function AppInner() {
 
       <div className="app-body">
         <div className="app-tree">
+          <TreeErrorBoundary>
           <FamilyTree
             nodes={nodes}
             branches={liveData.branches}
@@ -87,6 +96,7 @@ function AppInner() {
               else setRootPersonId(id)
             }}
           />
+          </TreeErrorBoundary>
         </div>
         <div className="app-controls">
           <TreeControls

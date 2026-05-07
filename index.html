@@ -4,7 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vite-temp</title>
+    <title>Family Tree</title>
+    <style>
+      @media print {
+        .app-header, .app-controls, .em-panel, .em-backdrop { display: none !important; }
+        body, html, #root, .app, .app-body, .app-tree { overflow: visible !important; height: auto !important; }
+        .f3 { transform: none !important; }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
