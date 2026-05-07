@@ -1,0 +1,194 @@
+{
+  "version": "1.0",
+  "lastModified": "2026-05-06T00:00:00Z",
+  "branches": [
+    { "id": "paternal", "label": "Dad's Side", "color": "#0891B2" },
+    { "id": "maternal", "label": "Mom's Side", "color": "#7C3AED" }
+  ],
+  "people": [
+    {
+      "id": "p001",
+      "firstName": "Margaret",
+      "lastName": "Sullivan",
+      "maidenName": "O'Brien",
+      "gender": "female",
+      "birthDate": "1942-03-15",
+      "birthPlace": "Cork, Ireland",
+      "deathDate": null,
+      "isLiving": true,
+      "bio": "Immigrated to the US in 1965. Retired schoolteacher.",
+      "occupation": "Retired schoolteacher",
+      "branches": ["maternal"],
+      "private": { "birthDate": true },
+      "privateNotes": "",
+      "customFields": { "hometown": "Cork, Ireland" }
+    },
+    {
+      "id": "p002",
+      "firstName": "Patrick",
+      "lastName": "Sullivan",
+      "maidenName": null,
+      "gender": "male",
+      "birthDate": "1938-11-02",
+      "birthPlace": "Galway, Ireland",
+      "deathDate": "2010-04-17",
+      "isLiving": false,
+      "bio": "Carpenter and woodworker.",
+      "occupation": "Carpenter",
+      "branches": ["maternal"],
+      "private": {},
+      "privateNotes": "",
+      "customFields": {}
+    },
+    {
+      "id": "p003",
+      "firstName": "Mary",
+      "lastName": "Sullivan",
+      "maidenName": null,
+      "gender": "female",
+      "birthDate": "1968-07-22",
+      "birthPlace": "Boston, MA",
+      "deathDate": null,
+      "isLiving": true,
+      "bio": "",
+      "occupation": "Nurse",
+      "branches": ["maternal"],
+      "private": { "birthDate": true },
+      "privateNotes": "",
+      "customFields": {}
+    },
+    {
+      "id": "p004",
+      "firstName": "Robert",
+      "lastName": "Mullen",
+      "maidenName": null,
+      "gender": "male",
+      "birthDate": "1940-05-10",
+      "birthPlace": "Chicago, IL",
+      "deathDate": null,
+      "isLiving": true,
+      "bio": "Retired police officer.",
+      "occupation": "Retired police officer",
+      "branches": ["paternal"],
+      "private": { "birthDate": true },
+      "privateNotes": "",
+      "customFields": {}
+    },
+    {
+      "id": "p005",
+      "firstName": "Jane",
+      "lastName": "Mullen",
+      "maidenName": "Davis",
+      "gender": "female",
+      "birthDate": "1944-09-30",
+      "birthPlace": "Chicago, IL",
+      "deathDate": "2018-12-01",
+      "isLiving": false,
+      "bio": "",
+      "occupation": "Homemaker",
+      "branches": ["paternal"],
+      "private": {},
+      "privateNotes": "",
+      "customFields": {}
+    },
+    {
+      "id": "p006",
+      "firstName": "Brian",
+      "lastName": "Mullen",
+      "maidenName": null,
+      "gender": "male",
+      "birthDate": "1967-02-14",
+      "birthPlace": "Chicago, IL",
+      "deathDate": null,
+      "isLiving": true,
+      "bio": "",
+      "occupation": "Engineer",
+      "branches": ["paternal"],
+      "private": { "birthDate": true },
+      "privateNotes": "",
+      "customFields": {}
+    },
+    {
+      "id": "p007",
+      "firstName": "Alex",
+      "lastName": "Mullen",
+      "maidenName": null,
+      "gender": "other",
+      "birthDate": "1994-06-03",
+      "birthPlace": "Boston, MA",
+      "deathDate": null,
+      "isLiving": true,
+      "bio": "The root person — belongs to both branches.",
+      "occupation": "Software engineer",
+      "branches": ["paternal", "maternal"],
+      "private": { "birthDate": true },
+      "privateNotes": "Root person for this tree.",
+      "customFields": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r001",
+      "type": "spouse",
+      "fromId": "p001",
+      "toId": "p002",
+      "marriageDate": "1965-06-20",
+      "divorceDate": null,
+      "isCurrentSpouse": false
+    },
+    {
+      "id": "r002",
+      "type": "parent-child",
+      "fromId": "p001",
+      "toId": "p003"
+    },
+    {
+      "id": "r003",
+      "type": "parent-child",
+      "fromId": "p002",
+      "toId": "p003"
+    },
+    {
+      "id": "r004",
+      "type": "spouse",
+      "fromId": "p004",
+      "toId": "p005",
+      "marriageDate": "1963-08-15",
+      "divorceDate": null,
+      "isCurrentSpouse": false
+    },
+    {
+      "id": "r005",
+      "type": "parent-child",
+      "fromId": "p004",
+      "toId": "p006"
+    },
+    {
+      "id": "r006",
+      "type": "parent-child",
+      "fromId": "p005",
+      "toId": "p006"
+    },
+    {
+      "id": "r007",
+      "type": "spouse",
+      "fromId": "p003",
+      "toId": "p006",
+      "marriageDate": "1993-09-11",
+      "divorceDate": null,
+      "isCurrentSpouse": true
+    },
+    {
+      "id": "r008",
+      "type": "parent-child",
+      "fromId": "p003",
+      "toId": "p007"
+    },
+    {
+      "id": "r009",
+      "type": "parent-child",
+      "fromId": "p006",
+      "toId": "p007"
+    }
+  ]
+}
