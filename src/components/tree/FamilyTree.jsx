@@ -57,12 +57,44 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     const chart = createChart(containerRef.current, nodes)
     const card = chart.setCardHtml()
 
-    card.setCardDisplay([
-      (d) => `${d.data.firstName ?? ''} ${d.data.lastName ?? ''}`.trim(),
-    ])
+    // card_dim controls foreignObject size; must match .ft-node CSS
+    card.card_dim = { w: 190, h: 72, text_x: 0, text_y: 0, img_w: 0, img_h: 0, img_x: 0, img_y: 0 }
+
+    card.cardInnerHtmlCreator = (d) => {
+      const person = d.data.data
+      if (person?.isVirtual) return '<div class="ft-node ft-node--virtual"></div>'
+      if (!person) return '<div class="ft-node ft-node--empty"></div>'
+
+      const color = getBranchColor(person, branches)
+      const initials = getInitials(person)
+      const lifespan = formatLifespan(person)
+      const isMale = person.gender === 'M'
+      const isFemale = person.gender === 'F'
+      const avatarBorder = isMale ? '#60a5fa' : isFemale ? '#f472b6' : color
+      const avatarBg = isMale ? 'rgba(96,165,250,0.12)' : isFemale ? 'rgba(244,114,182,0.12)' : `${color}20`
+      const avatarRadius = isMale ? '6px' : '50%'
+      const hasPrivate = isEditor && Object.values(person.private ?? {}).some(Boolean)
+      const bridge = isBridgePerson(person, branches ?? [])
+
+      return `
+        <div class="ft-node" style="--node-color:${color}">
+          <div class="ft-avatar" style="background:${avatarBg};border-color:${avatarBorder};border-radius:${avatarRadius}">
+            <span class="ft-initials" style="color:${avatarBorder}">${initials}</span>
+          </div>
+          <div class="ft-info">
+            <div class="ft-name">${person.firstName ?? ''} ${person.lastName ?? ''}</div>
+            ${lifespan ? `<div class="ft-lifespan">${lifespan}</div>` : ''}
+            ${bridge ? '<div class="ft-bridge-badge">⇔</div>' : ''}
+          </div>
+          ${hasPrivate ? '<div class="ft-lock">🔒</div>' : ''}
+        </div>
+      `
+    }
 
     card.onCardClick = (e, d) => {
-      if (onPersonClick && d?.data?.id) onPersonClick(d.data.id)
+      if (!onPersonClick) return
+      if (d?.data?.data?.isVirtual) return
+      if (d?.data?.id) onPersonClick(d.data.id)
     }
 
     chart.setTransitionTime(600)

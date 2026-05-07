@@ -16,7 +16,8 @@
 }
 
 .ft-container .links_view path {
-  stroke: #334155;
+  stroke: #64748b;
+  stroke-width: 2px;
 }
 
 /* Custom node card */
@@ -101,9 +102,17 @@
   top: 4px;
 }
 
-/* family-chart card container sizing */
+/* Normalize all card sizes — overrides f3's main-card scaling */
 .ft-container .card_cont foreignObject {
-  width: 188px;
-  height: 72px;
   overflow: visible;
+}
+
+/* Hide virtual parent nodes used to connect siblings */
+.ft-container .card.card-genderless[data-id^="__vp_"] {
+  display: none;
+  pointer-events: none;
+}
+
+.ft-node--virtual {
+  display: none;
 }
