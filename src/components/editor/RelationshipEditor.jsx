@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Fuse from 'fuse.js'
 import { useFamilyData } from '../../context/FamilyDataContext'
 import './RelationshipEditor.css'
@@ -33,6 +33,17 @@ export function RelationshipEditor({ personId }) {
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState(null)
   const [marriageDate, setMarriageDate] = useState('')
+  const [addToSpouse, setAddToSpouse] = useState(true)
+
+  const currentSpouse = useMemo(() => {
+    if (relType !== 'parent-child') return null
+    const spouseRel = (liveData?.relationships ?? []).find(
+      (r) => r.type === 'spouse' && (r.fromId === personId || r.toId === personId)
+    )
+    if (!spouseRel) return null
+    const spouseId = spouseRel.fromId === personId ? spouseRel.toId : spouseRel.fromId
+    return (liveData?.people ?? []).find((p) => p.id === spouseId) ?? null
+  }, [relType, personId, liveData])
 
   const myRels = (liveData?.relationships ?? []).filter(
     (r) => r.fromId === personId || r.toId === personId
@@ -56,6 +67,14 @@ export function RelationshipEditor({ personId }) {
       ...(relType === 'spouse' ? { marriageDate: marriageDate || null, divorceDate: null, isCurrentSpouse: true } : {}),
     }
     addRelationship(rel)
+    if (relType === 'parent-child' && addToSpouse && currentSpouse) {
+      addRelationship({
+        id: `r_${Date.now() + 1}`,
+        type: 'parent-child',
+        fromId: currentSpouse.id,
+        toId: selectedId,
+      })
+    }
     setShowAdd(false)
     setSearch('')
     setSelectedId(null)
@@ -108,6 +127,16 @@ export function RelationshipEditor({ personId }) {
               <label className="re-label">Marriage date (optional)</label>
               <input type="date" className="re-search" value={marriageDate} onChange={(e) => setMarriageDate(e.target.value)} />
             </div>
+          )}
+          {relType === 'parent-child' && currentSpouse && (
+            <label className="re-spouse-check">
+              <input
+                type="checkbox"
+                checked={addToSpouse}
+                onChange={(e) => setAddToSpouse(e.target.checked)}
+              />
+              Also add {currentSpouse.firstName} {currentSpouse.lastName} as parent
+            </label>
           )}
           <div className="re-add-actions">
             <button className="re-cancel" onClick={() => setShowAdd(false)}>Cancel</button>

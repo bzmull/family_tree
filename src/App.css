@@ -95,6 +95,7 @@ body {
 
 .save-status { color: #34d399; font-size: 0.78rem; }
 .save-error { color: #f87171; font-size: 0.78rem; }
+.unsaved-status { color: #fbbf24; font-size: 0.78rem; }
 
 .app-loading {
   align-items: center;

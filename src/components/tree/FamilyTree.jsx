@@ -60,7 +60,7 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     // card_dim controls foreignObject size; must match .ft-node CSS
     card.card_dim = { w: 190, h: 72, text_x: 0, text_y: 0, img_w: 0, img_h: 0, img_x: 0, img_y: 0 }
 
-    card.cardInnerHtmlCreator = (d) => {
+    card.setCardInnerHtmlCreator((d) => {
       const person = d.data.data
       if (person?.isVirtual) return '<div class="ft-node ft-node--virtual"></div>'
       if (!person) return '<div class="ft-node ft-node--empty"></div>'
@@ -89,7 +89,7 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
           ${hasPrivate ? '<div class="ft-lock">🔒</div>' : ''}
         </div>
       `
-    }
+    })
 
     card.onCardClick = (e, d) => {
       if (!onPersonClick) return

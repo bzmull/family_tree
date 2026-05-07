@@ -3,6 +3,7 @@ import { FamilyDataProvider, useFamilyData } from './context/FamilyDataContext'
 import { useAuth } from './hooks/useAuth'
 import { useTreeData, toF3Nodes } from './hooks/useTreeData'
 import { useSave } from './hooks/useSave'
+import { useAutosave } from './hooks/useAutosave'
 import { filterByBranch } from './utils/branchFilter'
 import { PasswordGate } from './components/auth/PasswordGate'
 import { FamilyTree } from './components/tree/FamilyTree'
@@ -15,13 +16,14 @@ import { ExportPanel } from './components/export/ExportPanel'
 import './App.css'
 
 function AppInner({ auth }) {
-  const { liveData, setEditingPersonId } = useFamilyData()
+  const { liveData, setEditingPersonId, draft } = useFamilyData()
   const { token, isEditor, logout } = auth
   const [activeBranch, setActiveBranch] = useState('all')
   const [rootPersonId, setRootPersonId] = useState(null)
   const { save, saving, saveError, lastSavedAt } = useSave(token)
 
   useTreeData(token)
+  useAutosave(draft, save, isEditor)
 
   const filteredData = useMemo(() => {
     if (!liveData) return null
@@ -73,10 +75,11 @@ function AppInner({ auth }) {
               {saving ? 'Saving…' : 'Save'}
             </button>
           )}
-          {lastSavedAt && (
-            <span className="save-status">
-              Saved — tree refreshing in ~60s
-            </span>
+          {draft && !saving && isEditor && (
+            <span className="unsaved-status">Unsaved changes</span>
+          )}
+          {lastSavedAt && !draft && (
+            <span className="save-status">Saved — tree refreshing in ~60s</span>
           )}
           {saveError && <span className="save-error">{saveError}</span>}
           <button className="header-btn" onClick={logout}>Sign out</button>
