@@ -1,0 +1,30 @@
+.branch-filter {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.branch-pill {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 999px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.3rem 0.85rem;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.branch-pill:hover {
+  border-color: var(--branch-color, #7c3aed);
+  color: #f1f5f9;
+}
+
+.branch-pill.active {
+  background: var(--branch-color, #7c3aed);
+  border-color: var(--branch-color, #7c3aed);
+  color: #fff;
+  font-weight: 600;
+}

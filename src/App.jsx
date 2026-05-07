@@ -1,122 +1,107 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useState, useMemo } from 'react'
+import { FamilyDataProvider, useFamilyData } from './context/FamilyDataContext'
+import { useAuth } from './hooks/useAuth'
+import { useTreeData, toF3Nodes } from './hooks/useTreeData'
+import { useSave } from './hooks/useSave'
+import { filterByBranch } from './utils/branchFilter'
+import { PasswordGate } from './components/auth/PasswordGate'
+import { FamilyTree } from './components/tree/FamilyTree'
+import { BranchFilter } from './components/tree/BranchFilter'
+import { TreeControls } from './components/tree/TreeControls'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppInner() {
+  const { liveData, setEditingPersonId } = useFamilyData()
+  const { token, isEditor, logout } = useAuth()
+  const [activeBranch, setActiveBranch] = useState('all')
+  const [rootPersonId, setRootPersonId] = useState(null)
+  const { save, saving, saveError, lastSavedAt } = useSave(token)
+
+  useTreeData(token)
+
+  const filteredData = useMemo(() => {
+    if (!liveData) return null
+    return filterByBranch(liveData, activeBranch)
+  }, [liveData, activeBranch])
+
+  const nodes = useMemo(() => toF3Nodes(filteredData), [filteredData])
+
+  if (!liveData) {
+    return (
+      <div className="app-loading">
+        <div className="app-spinner" />
+        <p>Loading family tree…</p>
+      </div>
+    )
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app">
+      <header className="app-header">
+        <div className="app-header-left">
+          <span className="app-title">Family Tree</span>
+          <BranchFilter
+            branches={liveData.branches}
+            activeBranch={activeBranch}
+            onChange={setActiveBranch}
+          />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+        <div className="app-header-right">
+          {isEditor && (
+            <button
+              className="header-btn header-btn--save"
+              onClick={save}
+              disabled={saving}
+            >
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+          )}
+          {lastSavedAt && (
+            <span className="save-status">
+              Saved — tree refreshing in ~60s
+            </span>
+          )}
+          {saveError && <span className="save-error">{saveError}</span>}
+          <button className="header-btn" onClick={logout}>Sign out</button>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <div className="app-body">
+        <div className="app-tree">
+          <FamilyTree
+            nodes={nodes}
+            branches={liveData.branches}
+            isEditor={isEditor}
+            rootPersonId={rootPersonId}
+            onPersonClick={(id) => {
+              if (isEditor) setEditingPersonId(id)
+              else setRootPersonId(id)
+            }}
+          />
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+        <div className="app-controls">
+          <TreeControls
+            onFitScreen={() => setRootPersonId(null)}
+            onZoomIn={() => document.querySelector('svg.main_svg')?.dispatchEvent(new WheelEvent('wheel', { deltaY: -200, bubbles: true }))}
+            onZoomOut={() => document.querySelector('svg.main_svg')?.dispatchEvent(new WheelEvent('wheel', { deltaY: 200, bubbles: true }))}
+            onJumpToRoot={() => setRootPersonId(nodes[0]?.id ?? null)}
+          />
         </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      </div>
+    </div>
   )
 }
 
-export default App
+export default function App() {
+  const auth = useAuth()
+
+  if (!auth.isAuthenticated) {
+    return <PasswordGate onLogin={auth.login} error={auth.error} loading={auth.loading} />
+  }
+
+  return (
+    <FamilyDataProvider>
+      <AppInner />
+    </FamilyDataProvider>
+  )
+}
