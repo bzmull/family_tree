@@ -10,9 +10,17 @@
   background: #0f172a;
 }
 
-/* Override family-chart defaults for dark theme */
+/* f3Canvas: override library's inline overflow:hidden so panned nodes/lines aren't clipped */
+.ft-container #f3Canvas {
+  overflow: visible !important;
+}
+
+/* SVG must fill its container; overflow:visible lets paths pan beyond SVG bounds */
 .ft-container svg.main_svg {
   background: #0f172a;
+  height: 100%;
+  overflow: visible;
+  width: 100%;
 }
 
 .ft-container .links_view path {
