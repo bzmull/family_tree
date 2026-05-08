@@ -4,7 +4,7 @@ export function filterByBranch(data, branchId) {
   // Collect people in the selected branch
   const branchPersonIds = new Set(
     data.people
-      .filter((p) => p.branches.includes(branchId))
+      .filter((p) => (p.branches ?? []).includes(branchId))
       .map((p) => p.id)
   )
 
@@ -31,5 +31,6 @@ export function filterByBranch(data, branchId) {
 }
 
 export function isBridgePerson(person, allBranches) {
-  return person.branches.length > 1 || allBranches.every((b) => person.branches.includes(b.id))
+  const branches = person.branches ?? []
+  return branches.length > 1 || allBranches.every((b) => branches.includes(b.id))
 }
