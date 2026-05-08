@@ -61,14 +61,15 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     card.card_dim = { w: 190, h: 72, text_x: 0, text_y: 0, img_w: 0, img_h: 0, img_x: 0, img_y: 0 }
 
     card.setCardInnerHtmlCreator((d) => {
-      const person = d.data  // f3 passes person data at d.data, not d.data.data
+      // f3 node shape: { id, data: {...personFields}, rels }  — person fields are at d.data.data
+      const person = d.data?.data
       if (person?.isVirtual) return '<div class="ft-node ft-node--virtual"></div>'
       if (!person) return '<div class="ft-node ft-node--empty"></div>'
 
       const initials = getInitials(person)
       const lifespan = formatLifespan(person)
-      const isMale = person.gender === 'M' || person.gender === 'male'
-      const isFemale = person.gender === 'F' || person.gender === 'female'
+      const isMale = person.gender === 'M'
+      const isFemale = person.gender === 'F'
       const avatarBorder = isMale ? '#60a5fa' : isFemale ? '#f472b6' : '#94a3b8'
       const avatarBg = isMale ? 'rgba(96,165,250,0.12)' : isFemale ? 'rgba(244,114,182,0.12)' : 'rgba(148,163,184,0.12)'
       const avatarRadius = isMale ? '6px' : '50%'
@@ -94,7 +95,7 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
 
     card.onCardClick = (e, d) => {
       if (!onPersonClick) return
-      if (d?.data?.isVirtual) return
+      if (d?.data?.data?.isVirtual) return
       if (d?.data?.id) onPersonClick(d.data.id)
     }
 
