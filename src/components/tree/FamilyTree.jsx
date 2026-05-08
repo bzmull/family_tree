@@ -65,14 +65,15 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
       if (person?.isVirtual) return '<div class="ft-node ft-node--virtual"></div>'
       if (!person) return '<div class="ft-node ft-node--empty"></div>'
 
-      const color = getBranchColor(person, branches)
       const initials = getInitials(person)
       const lifespan = formatLifespan(person)
-      const isMale = person.gender === 'M'
-      const isFemale = person.gender === 'F'
-      const avatarBorder = isMale ? '#60a5fa' : isFemale ? '#f472b6' : color
-      const avatarBg = isMale ? 'rgba(96,165,250,0.12)' : isFemale ? 'rgba(244,114,182,0.12)' : `${color}20`
+      const isMale = person.gender === 'M' || person.gender === 'male'
+      const isFemale = person.gender === 'F' || person.gender === 'female'
+      const avatarBorder = isMale ? '#60a5fa' : isFemale ? '#f472b6' : '#94a3b8'
+      const avatarBg = isMale ? 'rgba(96,165,250,0.12)' : isFemale ? 'rgba(244,114,182,0.12)' : 'rgba(148,163,184,0.12)'
       const avatarRadius = isMale ? '6px' : '50%'
+      const branchColor = getBranchColor(person, branches)
+      const color = branchColor !== '#64748b' ? branchColor : avatarBorder
       const hasPrivate = isEditor && Object.values(person.private ?? {}).some(Boolean)
       const bridge = isBridgePerson(person, branches ?? [])
 
