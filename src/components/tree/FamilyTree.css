@@ -124,3 +124,9 @@
 .ft-node--virtual {
   display: none;
 }
+
+/* Hide f3's built-in "add relative" placeholder cards — we use our own edit UI */
+.ft-container .card.card-new-rel {
+  display: none;
+  pointer-events: none;
+}
