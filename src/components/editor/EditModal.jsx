@@ -27,10 +27,11 @@ function blankPerson(branches) {
 }
 
 export function EditModal() {
-  const { liveData, editingPersonId, setEditingPersonId, updatePerson, addPerson } = useFamilyData()
+  const { liveData, editingPersonId, setEditingPersonId, updatePerson, addPerson, deletePerson } = useFamilyData()
   const [tab, setTab] = useState('Person')
   const [draft, setDraft] = useState(null)
   const [isNew, setIsNew] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const isOpen = editingPersonId != null
 
@@ -53,7 +54,13 @@ export function EditModal() {
     setEditingPersonId(null)
   }
 
-  const handleClose = () => setEditingPersonId(null)
+  const handleClose = () => { setEditingPersonId(null); setConfirmDelete(false) }
+
+  const handleDelete = () => {
+    if (!confirmDelete) { setConfirmDelete(true); return }
+    deletePerson(draft.id)
+    setEditingPersonId(null)
+  }
 
   if (!isOpen || !draft) return null
 
@@ -97,10 +104,24 @@ export function EditModal() {
         </div>
 
         <div className="em-footer">
-          <button className="em-btn em-btn--cancel" onClick={handleClose}>Cancel</button>
-          <button className="em-btn em-btn--save" onClick={handleSave} disabled={!draft.firstName || !draft.lastName}>
-            {isNew ? 'Add to tree' : 'Apply changes'}
-          </button>
+          {!isNew && (
+            confirmDelete ? (
+              <>
+                <button className="em-btn em-btn--cancel" onClick={() => setConfirmDelete(false)}>Keep</button>
+                <button className="em-btn em-btn--delete em-btn--delete-confirm" onClick={handleDelete}>Delete forever</button>
+              </>
+            ) : (
+              <button className="em-btn em-btn--delete" onClick={handleDelete}>Delete</button>
+            )
+          )}
+          {!confirmDelete && (
+            <>
+              <button className="em-btn em-btn--cancel" onClick={handleClose}>Cancel</button>
+              <button className="em-btn em-btn--save" onClick={handleSave} disabled={!draft.firstName || !draft.lastName}>
+                {isNew ? 'Add to tree' : 'Apply changes'}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </>

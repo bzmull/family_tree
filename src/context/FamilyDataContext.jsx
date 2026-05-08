@@ -38,6 +38,19 @@ export function FamilyDataProvider({ children }) {
     })
   }, [data])
 
+  const deletePerson = useCallback((personId) => {
+    setDraft((prev) => {
+      const base = prev ?? data
+      return {
+        ...base,
+        people: base.people.filter((p) => p.id !== personId),
+        relationships: base.relationships.filter(
+          (r) => r.fromId !== personId && r.toId !== personId
+        ),
+      }
+    })
+  }, [data])
+
   const discardDraft = useCallback(() => setDraft(null), [])
 
   const commitDraft = useCallback((savedData) => {
@@ -53,7 +66,7 @@ export function FamilyDataProvider({ children }) {
       data, setData,
       draft, liveData,
       editingPersonId, setEditingPersonId,
-      updatePerson, addPerson,
+      updatePerson, addPerson, deletePerson,
       addRelationship, removeRelationship,
       discardDraft, commitDraft,
     }}>
