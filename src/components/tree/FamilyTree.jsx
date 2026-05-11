@@ -21,33 +21,6 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
   const containerRef = useRef(null)
   const chartRef = useRef(null)
 
-  const buildCard = useCallback((branches, isEditor) => {
-    return (d) => {
-      const person = d.data.data
-      if (!person) return '<div class="ft-node ft-node--empty"></div>'
-
-      const color = getBranchColor(person, branches)
-      const lifespan = formatLifespan(person)
-      const initials = getInitials(person)
-      const bridge = isBridgePerson(person, branches ?? [])
-      const hasPrivate = isEditor && Object.values(person.private ?? {}).some(Boolean)
-
-      return `
-        <div class="ft-node" style="--node-color:${color}" data-id="${person.id}">
-          <div class="ft-avatar" style="background:${color}20;border-color:${color}">
-            <span class="ft-initials" style="color:${color}">${initials}</span>
-          </div>
-          <div class="ft-info">
-            <div class="ft-name">${person.firstName} ${person.lastName}${person.maidenName ? ` <span class="ft-maiden">(${person.maidenName})</span>` : ''}</div>
-            ${lifespan ? `<div class="ft-lifespan">${lifespan}</div>` : ''}
-            ${bridge ? '<div class="ft-bridge-badge">⇔ Bridge</div>' : ''}
-          </div>
-          ${hasPrivate ? '<div class="ft-lock" title="Has private fields">🔒</div>' : ''}
-        </div>
-      `
-    }
-  }, [])
-
   const hasData = (nodes?.length ?? 0) > 0
 
   // Mount chart once data is first available
@@ -57,11 +30,9 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     const chart = createChart(containerRef.current, nodes)
     const card = chart.setCardHtml()
 
-    // card_dim controls foreignObject size; must match .ft-node CSS
     card.card_dim = { w: 190, h: 72, text_x: 0, text_y: 0, img_w: 0, img_h: 0, img_x: 0, img_y: 0 }
 
     card.setCardInnerHtmlCreator((d) => {
-      // f3 node shape: { id, data: {...personFields}, rels }  — person fields are at d.data.data
       const person = d.data?.data
       if (person?.isVirtual) return '<div class="ft-node ft-node--virtual"></div>'
       if (!person) return '<div class="ft-node ft-node--empty"></div>'
@@ -93,12 +64,6 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
       `
     })
 
-    card.onCardClick = (e, d) => {
-      if (!onPersonClick) return
-      if (d?.data?.data?.isVirtual) return
-      if (d?.data?.id) onPersonClick(d.data.id)
-    }
-
     chart.setTransitionTime(600)
     chart.updateTree({ initial: true })
     chartRef.current = chart
@@ -107,7 +72,7 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
       chartRef.current = null
       if (containerRef.current) containerRef.current.innerHTML = ''
     }
-  }, [hasData]) // re-run when data first arrives
+  }, [hasData])
 
   // Update data when nodes change
   useEffect(() => {
@@ -123,27 +88,34 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     chartRef.current.updateTree({ initial: false, tree_position: 'main_to_middle' })
   }, [rootPersonId])
 
-  const handleZoomIn = () => {
-    const svg = containerRef.current?.querySelector('svg.main_svg')
-    if (!svg) return
-    const current = svg.__zoom?.k ?? 1
-    svg.dispatchEvent(new WheelEvent('wheel', { deltaY: -100, bubbles: true }))
-  }
-
-  const handleZoomOut = () => {
-    const svg = containerRef.current?.querySelector('svg.main_svg')
-    if (!svg) return
-    svg.dispatchEvent(new WheelEvent('wheel', { deltaY: 100, bubbles: true }))
-  }
-
-  const handleFitScreen = () => {
-    if (!chartRef.current) return
-    chartRef.current.updateTree({ initial: false, tree_position: 'fit' })
-  }
+  // Chrome doesn't hit-test into zero-size transformed elements (.cards_view has
+  // width:0/height:0), so clicks land on #htmlSvg instead of .card children.
+  // getBoundingClientRect() does return the correct visual rect, so we use
+  // position-based detection to find which card was clicked.
+  const handleClick = useCallback((e) => {
+    if (!onPersonClick) return
+    const cards = containerRef.current?.querySelectorAll('#htmlSvg .card[data-id]')
+    if (!cards?.length) return
+    for (const card of cards) {
+      const r = card.getBoundingClientRect()
+      if (e.clientX >= r.left && e.clientX <= r.right &&
+          e.clientY >= r.top  && e.clientY <= r.bottom) {
+        if (card.querySelector('.ft-node--virtual')) continue
+        const id = card.getAttribute('data-id').replace(/--x\d+$/, '')
+        onPersonClick(id)
+        return
+      }
+    }
+  }, [onPersonClick])
 
   return (
     <div className="ft-wrapper">
-      <div ref={containerRef} className="ft-container" id="FamilyChart" />
+      <div
+        ref={containerRef}
+        className="ft-container"
+        id="FamilyChart"
+        onClick={handleClick}
+      />
     </div>
   )
 }

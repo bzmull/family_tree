@@ -110,6 +110,12 @@
   top: 4px;
 }
 
+/* f3 sets pointer-events:none on .card_cont so Chrome won't traverse into it.
+   Re-enable so .card children (which have pointer-events:auto inline) are hittable. */
+.ft-container .card_cont {
+  pointer-events: auto !important;
+}
+
 /* Normalize all card sizes — overrides f3's main-card scaling */
 .ft-container .card_cont foreignObject {
   overflow: visible;
@@ -125,8 +131,12 @@
   display: none;
 }
 
-/* Hide f3's built-in "add relative" placeholder cards — we use our own edit UI */
-.ft-container .card.card-new-rel {
-  display: none;
-  pointer-events: none;
+/* Style f3's auto-generated blank cards to look like "add person" buttons */
+.ft-container .card_cont .card:not(:has(.ft-node)) {
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.15s;
+}
+.ft-container .card_cont .card:not(:has(.ft-node)):hover {
+  opacity: 0.75;
 }
