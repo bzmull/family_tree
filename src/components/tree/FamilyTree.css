@@ -138,3 +138,10 @@
   display: none;
 }
 
+/* Hide f3 auto-generated placeholder cards — users add people manually */
+.ft-container .card.card-to-add,
+.ft-container .card.card-new-rel {
+  display: none !important;
+  pointer-events: none !important;
+}
+
