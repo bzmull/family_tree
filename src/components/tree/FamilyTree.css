@@ -40,14 +40,21 @@
   gap: 0.5rem;
   padding: 0.5rem 0.6rem;
   position: relative;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
   width: 180px;
   min-height: 64px;
 }
 
 .ft-node:hover {
   border-color: var(--node-color, #7c3aed);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--node-color, #7c3aed) 30%, transparent);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45),
+              0 0 0 2px color-mix(in srgb, var(--node-color, #7c3aed) 30%, transparent);
+  transform: translateY(-3px);
+}
+
+.ft-node:active {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  transform: translateY(1px);
 }
 
 .ft-node--empty {
@@ -131,12 +138,3 @@
   display: none;
 }
 
-/* Style f3's auto-generated blank cards to look like "add person" buttons */
-.ft-container .card_cont .card:not(:has(.ft-node)) {
-  cursor: pointer;
-  opacity: 0.45;
-  transition: opacity 0.15s;
-}
-.ft-container .card_cont .card:not(:has(.ft-node)):hover {
-  opacity: 0.75;
-}

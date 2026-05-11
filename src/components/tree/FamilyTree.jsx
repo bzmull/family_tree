@@ -5,6 +5,10 @@ import { formatLifespan } from '../../utils/ageCalculator'
 import { isBridgePerson } from '../../utils/branchFilter'
 import './FamilyTree.css'
 
+function removeBlankCards(container) {
+  container?.querySelectorAll('.card-to-add, .card-new-rel').forEach((el) => el.remove())
+}
+
 function getInitials(person) {
   const first = (person.firstName ?? '')[0] ?? ''
   const last = (person.lastName ?? '')[0] ?? ''
@@ -66,6 +70,7 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
 
     chart.setTransitionTime(600)
     chart.updateTree({ initial: true })
+    removeBlankCards(containerRef.current)
     chartRef.current = chart
 
     return () => {
@@ -79,6 +84,7 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     if (!chartRef.current || !nodes?.length) return
     chartRef.current.updateData(nodes)
     chartRef.current.updateTree({ initial: false, tree_position: 'inherit' })
+    removeBlankCards(containerRef.current)
   }, [nodes])
 
   // Jump to root when rootPersonId changes

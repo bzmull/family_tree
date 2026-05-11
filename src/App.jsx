@@ -7,7 +7,6 @@ import { useAutosave } from './hooks/useAutosave'
 import { filterByBranch } from './utils/branchFilter'
 import { PasswordGate } from './components/auth/PasswordGate'
 import { FamilyTree } from './components/tree/FamilyTree'
-import { PlaceholderModal } from './components/tree/PlaceholderModal'
 import { BranchFilter } from './components/tree/BranchFilter'
 import { TreeControls } from './components/tree/TreeControls'
 import { TreeErrorBoundary } from './components/tree/TreeErrorBoundary'
@@ -21,7 +20,6 @@ function AppInner({ auth }) {
   const { token, isEditor, logout } = auth
   const [activeBranch, setActiveBranch] = useState('all')
   const [rootPersonId, setRootPersonId] = useState(null)
-  const [dismissCardId, setDismissCardId] = useState(null)
   const { save, saving, saveError, lastSavedAt } = useSave(token)
 
   useTreeData(token)
@@ -97,10 +95,6 @@ function AppInner({ auth }) {
             isEditor={isEditor}
             rootPersonId={rootPersonId}
             onPersonClick={(id) => {
-              console.log('[App] onPersonClick called, id=', id, 'isEditor=', isEditor, 'peopleCount=', liveData?.people?.length)
-              const exists = (liveData?.people ?? []).some((p) => p.id === id)
-              console.log('[App] exists=', exists)
-              if (!exists) { setDismissCardId(id); return }
               if (!isEditor) { setRootPersonId(id); return }
               setEditingPersonId(id)
             }}
@@ -117,7 +111,6 @@ function AppInner({ auth }) {
         </div>
       </div>
       <EditModal />
-      <PlaceholderModal cardId={dismissCardId} onClose={() => setDismissCardId(null)} />
     </div>
   )
 }
