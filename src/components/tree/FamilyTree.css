@@ -139,8 +139,7 @@
 }
 
 /* Hide f3 auto-generated placeholder cards — users add people manually */
-.ft-container .card.card-to-add,
-.ft-container .card.card-new-rel {
+.ft-container .card.card-to-add {
   display: none !important;
   pointer-events: none !important;
 }
