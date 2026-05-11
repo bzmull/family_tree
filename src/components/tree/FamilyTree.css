@@ -138,8 +138,8 @@
   display: none;
 }
 
-/* Hide f3 auto-generated placeholder cards — users add people manually */
-.ft-container .card.card-to-add {
+/* Hide cards our renderer marked as empty (no person data) */
+.ft-container .card:has(.ft-node--empty) {
   display: none !important;
   pointer-events: none !important;
 }
