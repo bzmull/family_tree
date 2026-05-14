@@ -33,9 +33,10 @@ export function FamilyTree({ nodes, branches, onPersonClick, isEditor, rootPerso
     card.card_dim = { w: 190, h: 72, text_x: 0, text_y: 0, img_w: 0, img_h: 0, img_x: 0, img_y: 0 }
 
     card.setCardInnerHtmlCreator((d) => {
+      if (d.data?.to_add) return '<div class="ft-node ft-node--empty"></div>'
       const person = d.data?.data
       if (person?.isVirtual) return '<div class="ft-node ft-node--virtual"></div>'
-      if (!person) return '<div class="ft-node ft-node--empty"></div>'
+      if (!person || !person.id) return '<div class="ft-node ft-node--empty"></div>'
 
       const initials = getInitials(person)
       const lifespan = formatLifespan(person)

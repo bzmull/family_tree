@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { FamilyDataProvider, useFamilyData } from './context/FamilyDataContext'
 import { useAuth } from './hooks/useAuth'
 import { useTreeData, toF3Nodes } from './hooks/useTreeData'
@@ -32,6 +32,13 @@ function AppInner({ auth }) {
 
   const nodes = useMemo(() => toF3Nodes(filteredData), [filteredData])
 
+  // On first load, centre on the root person (oldest ancestor — no parents in tree)
+  useEffect(() => {
+    if (!nodes?.length || rootPersonId !== null) return
+    const rootNode = nodes.find((n) => !n.rels?.parents?.length && !n.data?.isVirtual)
+    setRootPersonId(rootNode?.id ?? nodes[0]?.id)
+  }, [nodes])
+
   if (!liveData) {
     return (
       <div className="app-loading">
@@ -53,7 +60,16 @@ function AppInner({ auth }) {
           />
           <SearchBar
             activeBranch={activeBranch}
-            onSelect={(id) => setRootPersonId(id)}
+            onSelect={(id) => {
+              const node = nodes?.find((n) => n.id === id)
+              // If this person has no children but has a spouse (e.g. co-parent like Zahava),
+              // center on the spouse who holds the children list so descendants are visible.
+              if (!node?.rels?.children?.length && node?.rels?.spouses?.length) {
+                setRootPersonId(node.rels.spouses[0])
+              } else {
+                setRootPersonId(id)
+              }
+            }}
           />
         </div>
         <div className="app-header-right">
