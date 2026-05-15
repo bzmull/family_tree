@@ -4,31 +4,24 @@
   height: 100%;
 }
 
-.ft-container {
-  width: 100%;
-  height: 100%;
+/* react-zoom-pan-pinch wrapper: fills the available space and clips overflow */
+.ft-transform-wrapper {
+  width: 100% !important;
+  height: 100% !important;
   background: #0f172a;
 }
 
-/* f3Canvas: override library's inline overflow:hidden so panned nodes/lines aren't clipped */
-.ft-container #f3Canvas {
-  overflow: visible !important;
-}
-
-/* SVG must fill its container; overflow:visible lets paths pan beyond SVG bounds */
-.ft-container svg.main_svg {
+/* The tree canvas — background set via react-zoom-pan-pinch's content div */
+.ft-tree {
   background: #0f172a;
-  height: 100%;
-  overflow: visible;
-  width: 100%;
 }
 
-.ft-container .links_view path {
-  stroke: #64748b;
-  stroke-width: 2px;
+/* Connector lines rendered by react-family-tree as <i> elements */
+.ft-tree > i {
+  background: #475569 !important;
 }
 
-/* Custom node card */
+/* ── Node card ── */
 .ft-node {
   align-items: center;
   background: #1e293b;
@@ -57,11 +50,7 @@
   transform: translateY(1px);
 }
 
-.ft-node--empty {
-  background: #1e293b88;
-  border: 1px dashed #334155;
-}
-
+/* ── Avatar ── */
 .ft-avatar {
   align-items: center;
   border: 2px solid;
@@ -78,6 +67,7 @@
   font-weight: 700;
 }
 
+/* ── Text ── */
 .ft-info {
   flex: 1;
   min-width: 0;
@@ -116,31 +106,3 @@
   right: 4px;
   top: 4px;
 }
-
-/* f3 sets pointer-events:none on .card_cont so Chrome won't traverse into it.
-   Re-enable so .card children (which have pointer-events:auto inline) are hittable. */
-.ft-container .card_cont {
-  pointer-events: auto !important;
-}
-
-/* Normalize all card sizes — overrides f3's main-card scaling */
-.ft-container .card_cont foreignObject {
-  overflow: visible;
-}
-
-/* Hide virtual parent nodes used to connect siblings */
-.ft-container .card.card-genderless[data-id^="__vp_"] {
-  display: none;
-  pointer-events: none;
-}
-
-.ft-node--virtual {
-  display: none;
-}
-
-/* Hide cards our renderer marked as empty (no person data) */
-.ft-container .card:has(.ft-node--empty) {
-  display: none !important;
-  pointer-events: none !important;
-}
-

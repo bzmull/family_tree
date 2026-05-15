@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { useFamilyData } from '../context/FamilyDataContext'
-import { transformToF3Format } from '../utils/dataTransform'
+import { transformToRelNodes } from '../utils/dataTransform'
 
 export function useTreeData(token) {
   const { setData } = useFamilyData()
@@ -26,7 +26,7 @@ export function useTreeData(token) {
   return { refetch: fetchData }
 }
 
-export function toF3Nodes(data) {
+export function toRelNodes(data) {
   if (!data) return []
-  return transformToF3Format(data)
+  return transformToRelNodes(data)
 }

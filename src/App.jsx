@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { FamilyDataProvider, useFamilyData } from './context/FamilyDataContext'
 import { useAuth } from './hooks/useAuth'
-import { useTreeData, toF3Nodes } from './hooks/useTreeData'
+import { useTreeData, toRelNodes } from './hooks/useTreeData'
 import { useSave } from './hooks/useSave'
 import { useAutosave } from './hooks/useAutosave'
 import { filterByBranch } from './utils/branchFilter'
@@ -21,6 +21,7 @@ function AppInner({ auth }) {
   const [activeBranch, setActiveBranch] = useState('all')
   const [rootPersonId, setRootPersonId] = useState(null)
   const { save, saving, saveError, lastSavedAt } = useSave(token)
+  const treeControlRef = useRef(null)
 
   useTreeData(token)
   useAutosave(draft, save, isEditor)
@@ -30,12 +31,17 @@ function AppInner({ auth }) {
     return filterByBranch(liveData, activeBranch)
   }, [liveData, activeBranch])
 
-  const nodes = useMemo(() => toF3Nodes(filteredData), [filteredData])
+  const nodes = useMemo(() => toRelNodes(filteredData), [filteredData])
 
-  // On first load, centre on the root person (oldest ancestor — no parents in tree)
+  const personById = useMemo(
+    () => new Map((filteredData?.people ?? []).map((p) => [p.id, p])),
+    [filteredData]
+  )
+
+  // On first load, centre on the oldest ancestor (no parents in the tree)
   useEffect(() => {
     if (!nodes?.length || rootPersonId !== null) return
-    const rootNode = nodes.find((n) => !n.rels?.parents?.length && !n.data?.isVirtual)
+    const rootNode = nodes.find((n) => !n.parents?.length)
     setRootPersonId(rootNode?.id ?? nodes[0]?.id)
   }, [nodes])
 
@@ -62,10 +68,10 @@ function AppInner({ auth }) {
             activeBranch={activeBranch}
             onSelect={(id) => {
               const node = nodes?.find((n) => n.id === id)
-              // If this person has no children but has a spouse (e.g. co-parent like Zahava),
-              // center on the spouse who holds the children list so descendants are visible.
-              if (!node?.rels?.children?.length && node?.rels?.spouses?.length) {
-                setRootPersonId(node.rels.spouses[0])
+              // If person has no children but has a spouse with children (co-parent like
+              // Zahava), centre on the spouse so descendants remain visible.
+              if (!node?.children?.length && node?.spouses?.length) {
+                setRootPersonId(node.spouses[0].id)
               } else {
                 setRootPersonId(id)
               }
@@ -105,24 +111,29 @@ function AppInner({ auth }) {
       <div className="app-body">
         <div className="app-tree">
           <TreeErrorBoundary>
-          <FamilyTree
-            nodes={nodes}
-            branches={liveData.branches}
-            isEditor={isEditor}
-            rootPersonId={rootPersonId}
-            onPersonClick={(id) => {
-              if (!isEditor) { setRootPersonId(id); return }
-              setEditingPersonId(id)
-            }}
-          />
+            <FamilyTree
+              nodes={nodes}
+              personById={personById}
+              branches={liveData.branches}
+              isEditor={isEditor}
+              rootPersonId={rootPersonId}
+              controlRef={treeControlRef}
+              onPersonClick={(id) => {
+                if (!isEditor) { setRootPersonId(id); return }
+                setEditingPersonId(id)
+              }}
+            />
           </TreeErrorBoundary>
         </div>
         <div className="app-controls">
           <TreeControls
-            onFitScreen={() => setRootPersonId(null)}
-            onZoomIn={() => document.querySelector('svg.main_svg')?.dispatchEvent(new WheelEvent('wheel', { deltaY: -200, bubbles: true }))}
-            onZoomOut={() => document.querySelector('svg.main_svg')?.dispatchEvent(new WheelEvent('wheel', { deltaY: 200, bubbles: true }))}
-            onJumpToRoot={() => setRootPersonId(nodes[0]?.id ?? null)}
+            onFitScreen={() => treeControlRef.current?.resetTransform()}
+            onZoomIn={() => treeControlRef.current?.zoomIn()}
+            onZoomOut={() => treeControlRef.current?.zoomOut()}
+            onJumpToRoot={() => {
+              const rootNode = nodes?.find((n) => !n.parents?.length)
+              setRootPersonId(rootNode?.id ?? nodes[0]?.id ?? null)
+            }}
           />
         </div>
       </div>
