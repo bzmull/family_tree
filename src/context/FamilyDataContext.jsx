@@ -38,6 +38,16 @@ export function FamilyDataProvider({ children }) {
     })
   }, [data])
 
+  const updateRelationship = useCallback((updatedRel) => {
+    setDraft((prev) => {
+      const base = prev ?? data
+      return {
+        ...base,
+        relationships: base.relationships.map((r) => r.id === updatedRel.id ? updatedRel : r),
+      }
+    })
+  }, [data])
+
   const deletePerson = useCallback((personId) => {
     setDraft((prev) => {
       const base = prev ?? data
@@ -67,7 +77,7 @@ export function FamilyDataProvider({ children }) {
       draft, liveData,
       editingPersonId, setEditingPersonId,
       updatePerson, addPerson, deletePerson,
-      addRelationship, removeRelationship,
+      addRelationship, removeRelationship, updateRelationship,
       discardDraft, commitDraft,
     }}>
       {children}

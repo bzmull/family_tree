@@ -26,19 +26,21 @@ function blankPerson() {
 }
 
 export function EditModal() {
-  const { liveData, editingPersonId, setEditingPersonId, updatePerson, addPerson, deletePerson } = useFamilyData()
+  const { liveData, editingPersonId, setEditingPersonId, updatePerson, addPerson, addRelationship, deletePerson } = useFamilyData()
   const [tab, setTab] = useState('Person')
   const [draft, setDraft] = useState(null)
   const [isNew, setIsNew] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [pendingRels, setPendingRels] = useState([])
 
   const isOpen = editingPersonId != null
 
   useEffect(() => {
-    if (!isOpen) { setDraft(null); setTab('Person'); return }
+    if (!isOpen) { setDraft(null); setTab('Person'); setPendingRels([]); return }
     if (editingPersonId === '__new__') {
       setDraft(blankPerson())
       setIsNew(true)
+      setPendingRels([])
     } else {
       const person = liveData?.people.find((p) => p.id === editingPersonId)
       setDraft(person ? structuredClone(person) : null)
@@ -48,8 +50,12 @@ export function EditModal() {
 
   const handleSave = () => {
     if (!draft) return
-    if (isNew) addPerson(draft)
-    else updatePerson(draft)
+    if (isNew) {
+      addPerson(draft)
+      pendingRels.forEach((rel) => addRelationship(rel))
+    } else {
+      updatePerson(draft)
+    }
     setEditingPersonId(null)
   }
 
@@ -93,11 +99,14 @@ export function EditModal() {
               onChange={setDraft}
             />
           )}
-          {tab === 'Relationships' && !isNew && (
-            <RelationshipEditor personId={draft.id} />
-          )}
-          {tab === 'Relationships' && isNew && (
-            <p className="em-new-note">Save the person first, then add relationships.</p>
+          {tab === 'Relationships' && (
+            <RelationshipEditor
+              personId={draft.id}
+              personName={isNew ? `${draft.firstName ?? ''} ${draft.lastName ?? ''}`.trim() || undefined : undefined}
+              externalRels={isNew ? pendingRels : undefined}
+              onExternalAdd={isNew ? (rel) => setPendingRels((prev) => [...prev, rel]) : undefined}
+              onExternalRemove={isNew ? (relId) => setPendingRels((prev) => prev.filter((r) => r.id !== relId)) : undefined}
+            />
           )}
         </div>
 

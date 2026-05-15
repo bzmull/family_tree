@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import ReactFamilyTree from 'react-family-tree'
+import calcTree from 'relatives-tree'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { formatLifespan } from '../../utils/ageCalculator'
 import './FamilyTree.css'
@@ -60,6 +61,11 @@ function PersonCard({ node, personById, isEditor, onPersonClick }) {
   )
 }
 
+const nodePx = (node, minL, minT) => ({
+  x: (node.left - minL) * (NODE_W / 2) + NODE_W / 2,
+  y: (node.top  - minT) * (NODE_H / 2) + NODE_H / 2,
+})
+
 export function FamilyTree({
   nodes,
   personById,
@@ -77,6 +83,34 @@ export function FamilyTree({
   useEffect(() => {
     apiRef.current?.centerView(0.8, 400)
   }, [rootPersonId])
+
+  const layoutNodes = useMemo(
+    () => (nodes?.length && rootPersonId ? calcTree(nodes, { rootId: rootPersonId }).nodes : []),
+    [nodes, rootPersonId]
+  )
+
+  const divorcedPairs = useMemo(() => {
+    if (!layoutNodes.length) return []
+    const nodeMap = new Map(layoutNodes.map((n) => [n.id, n]))
+    const seen = new Set()
+    const pairs = []
+    for (const node of layoutNodes) {
+      for (const spouse of (node.spouses ?? [])) {
+        if (spouse.type !== 'divorced') continue
+        const key = [node.id, spouse.id].sort().join('|')
+        if (seen.has(key)) continue
+        seen.add(key)
+        const other = nodeMap.get(spouse.id)
+        if (other) pairs.push([node, other])
+      }
+    }
+    return pairs
+  }, [layoutNodes])
+
+  const minLeft = useMemo(() => layoutNodes.length ? Math.min(...layoutNodes.map((n) => n.left)) : 0, [layoutNodes])
+  const minTop  = useMemo(() => layoutNodes.length ? Math.min(...layoutNodes.map((n) => n.top))  : 0, [layoutNodes])
+  const treeW = useMemo(() => layoutNodes.length ? (Math.max(...layoutNodes.map((n) => n.left)) - Math.min(...layoutNodes.map((n) => n.left))) * (NODE_W / 2) + NODE_W : 0, [layoutNodes])
+  const treeH = useMemo(() => layoutNodes.length ? (Math.max(...layoutNodes.map((n) => n.top))  - Math.min(...layoutNodes.map((n) => n.top)))  * (NODE_H / 2) + NODE_H : 0, [layoutNodes])
 
   if (!nodes?.length || !rootPersonId) return null
 
@@ -96,22 +130,59 @@ export function FamilyTree({
         }}
       >
         <TransformComponent wrapperClass="ft-transform-wrapper">
-          <ReactFamilyTree
-            nodes={nodes}
-            rootId={rootPersonId}
-            width={NODE_W}
-            height={NODE_H}
-            className="ft-tree"
-            renderNode={(node) => (
-              <PersonCard
-                key={node.id}
-                node={node}
-                personById={personById}
-                isEditor={isEditor}
-                onPersonClick={onPersonClick}
-              />
+          <div style={{ position: 'relative' }}>
+            <ReactFamilyTree
+              nodes={nodes}
+              rootId={rootPersonId}
+              width={NODE_W}
+              height={NODE_H}
+              className="ft-tree"
+              renderNode={(node) => (
+                <PersonCard
+                  key={node.id}
+                  node={node}
+                  personById={personById}
+                  isEditor={isEditor}
+                  onPersonClick={onPersonClick}
+                />
+              )}
+            />
+            {divorcedPairs.length > 0 && (
+              <svg
+                style={{
+                  position: 'absolute',
+                  top: minTop * (NODE_H / 2),
+                  left: minLeft * (NODE_W / 2),
+                  pointerEvents: 'none',
+                  overflow: 'visible',
+                }}
+                width={treeW}
+                height={treeH}
+              >
+                {divorcedPairs.map(([a, b]) => {
+                  const pa = nodePx(a, minLeft, minTop)
+                  const pb = nodePx(b, minLeft, minTop)
+                  const dx = pb.x - pa.x
+                  const dy = pb.y - pa.y
+                  const dist = Math.sqrt(dx * dx + dy * dy)
+                  const ux = dx / dist
+                  const uy = dy / dist
+                  const margin = 90
+                  return (
+                    <line
+                      key={`${a.id}|${b.id}`}
+                      x1={pa.x + ux * margin} y1={pa.y + uy * margin}
+                      x2={pb.x - ux * margin} y2={pb.y - uy * margin}
+                      stroke="#ef4444"
+                      strokeWidth={2}
+                      strokeDasharray="8,5"
+                      opacity={0.55}
+                    />
+                  )
+                })}
+              </svg>
             )}
-          />
+          </div>
         </TransformComponent>
       </TransformWrapper>
     </div>
