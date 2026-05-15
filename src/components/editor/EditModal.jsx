@@ -6,7 +6,7 @@ import './EditModal.css'
 
 const TABS = ['Person', 'Relationships']
 
-function blankPerson(branches) {
+function blankPerson() {
   return {
     id: crypto.randomUUID(),
     firstName: '',
@@ -19,7 +19,6 @@ function blankPerson(branches) {
     isLiving: true,
     bio: '',
     occupation: '',
-    branches: branches.length > 0 ? [branches[0].id] : [],
     private: {},
     privateNotes: '',
     customFields: {},
@@ -38,7 +37,7 @@ export function EditModal() {
   useEffect(() => {
     if (!isOpen) { setDraft(null); setTab('Person'); return }
     if (editingPersonId === '__new__') {
-      setDraft(blankPerson(liveData?.branches ?? []))
+      setDraft(blankPerson())
       setIsNew(true)
     } else {
       const person = liveData?.people.find((p) => p.id === editingPersonId)
@@ -91,7 +90,6 @@ export function EditModal() {
           {tab === 'Person' && (
             <PersonForm
               person={draft}
-              branches={liveData?.branches ?? []}
               onChange={setDraft}
             />
           )}

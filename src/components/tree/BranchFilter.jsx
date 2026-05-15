@@ -1,22 +1,21 @@
 import './BranchFilter.css'
 
-export function BranchFilter({ branches, activeBranch, onChange }) {
+export function BranchFilter({ options, activeSide, onChange }) {
   return (
     <div className="branch-filter">
       <button
-        className={`branch-pill ${activeBranch === 'all' ? 'active' : ''}`}
+        className={`branch-pill ${activeSide === 'all' ? 'active' : ''}`}
         onClick={() => onChange('all')}
       >
         All
       </button>
-      {branches.map((branch) => (
+      {options.map((opt) => (
         <button
-          key={branch.id}
-          className={`branch-pill ${activeBranch === branch.id ? 'active' : ''}`}
-          style={{ '--branch-color': branch.color }}
-          onClick={() => onChange(branch.id)}
+          key={opt.id}
+          className={`branch-pill ${activeSide === opt.id ? 'active' : ''}`}
+          onClick={() => onChange(opt.id)}
         >
-          {branch.label}
+          {opt.label}
         </button>
       ))}
     </div>

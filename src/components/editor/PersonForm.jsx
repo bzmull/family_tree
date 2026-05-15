@@ -26,7 +26,7 @@ function Field({ label, fieldName, privateFlags, onPrivacyChange, children }) {
   )
 }
 
-export function PersonForm({ person, branches, onChange }) {
+export function PersonForm({ person, onChange }) {
   const update = (key, value) => onChange({ ...person, [key]: value })
 
   const updatePrivacy = (fieldName, isPrivate) => {
@@ -110,27 +110,6 @@ export function PersonForm({ person, branches, onChange }) {
       <Field label="Private notes (editors only)" fieldName="privateNotes">
         <textarea className="pf-input pf-textarea" value={person.privateNotes ?? ''} onChange={(e) => update('privateNotes', e.target.value)} rows={2} />
       </Field>
-
-      <div className="pf-field">
-        <label className="pf-label">Family branches</label>
-        <div className="pf-branches">
-          {branches.map((b) => (
-            <label key={b.id} className="pf-branch-check">
-              <input
-                type="checkbox"
-                checked={(person.branches ?? []).includes(b.id)}
-                onChange={(e) => {
-                  const current = person.branches ?? []
-                  update('branches', e.target.checked
-                    ? [...current, b.id]
-                    : current.filter((id) => id !== b.id))
-                }}
-              />
-              <span style={{ color: b.color }}>{b.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
 
       {Object.keys(person.customFields ?? {}).length > 0 && (
         <div className="pf-field">

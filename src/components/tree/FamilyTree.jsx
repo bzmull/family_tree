@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import ReactFamilyTree from 'react-family-tree'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { formatLifespan } from '../../utils/ageCalculator'
-import { isBridgePerson } from '../../utils/branchFilter'
 import './FamilyTree.css'
 
 const NODE_W = 220
@@ -14,13 +13,7 @@ function getInitials(person) {
   return (first + last).toUpperCase()
 }
 
-function getBranchColor(person, branches) {
-  if (!branches?.length || !person.branches?.length) return '#64748b'
-  const branch = branches.find((b) => person.branches.includes(b.id))
-  return branch?.color ?? '#64748b'
-}
-
-function PersonCard({ node, personById, branches, isEditor, onPersonClick }) {
+function PersonCard({ node, personById, isEditor, onPersonClick }) {
   const person = personById.get(node.id)
 
   const style = {
@@ -46,14 +39,11 @@ function PersonCard({ node, personById, branches, isEditor, onPersonClick }) {
                      : isFemale ? 'rgba(244,114,182,0.12)'
                      :            'rgba(148,163,184,0.12)'
   const avatarRadius = isMale ? '6px' : '50%'
-  const branchColor  = getBranchColor(person, branches)
-  const color        = branchColor !== '#64748b' ? branchColor : avatarBorder
   const hasPrivate   = isEditor && Object.values(person.private ?? {}).some(Boolean)
-  const bridge       = isBridgePerson(person, branches ?? [])
 
   return (
     <div style={style} onClick={() => onPersonClick(node.id)}>
-      <div className="ft-node" style={{ '--node-color': color }}>
+      <div className="ft-node" style={{ '--node-color': avatarBorder }}>
         <div
           className="ft-avatar"
           style={{ background: avatarBg, borderColor: avatarBorder, borderRadius: avatarRadius }}
@@ -63,7 +53,6 @@ function PersonCard({ node, personById, branches, isEditor, onPersonClick }) {
         <div className="ft-info">
           <div className="ft-name">{person.firstName ?? ''} {person.lastName ?? ''}</div>
           {lifespan && <div className="ft-lifespan">{lifespan}</div>}
-          {bridge && <div className="ft-bridge-badge">⇔</div>}
         </div>
         {hasPrivate && <div className="ft-lock">🔒</div>}
       </div>
@@ -74,7 +63,6 @@ function PersonCard({ node, personById, branches, isEditor, onPersonClick }) {
 export function FamilyTree({
   nodes,
   personById,
-  branches,
   isEditor,
   rootPersonId,
   onPersonClick,
@@ -119,7 +107,6 @@ export function FamilyTree({
                 key={node.id}
                 node={node}
                 personById={personById}
-                branches={branches}
                 isEditor={isEditor}
                 onPersonClick={onPersonClick}
               />

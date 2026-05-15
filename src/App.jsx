@@ -4,8 +4,8 @@ import { useAuth } from './hooks/useAuth'
 import { useTreeData, toRelNodes } from './hooks/useTreeData'
 import { useSave } from './hooks/useSave'
 import { useAutosave } from './hooks/useAutosave'
-import { filterByBranch } from './utils/branchFilter'
 import { filterByGeneration } from './utils/generationFilter'
+import { filterByParentSide, getParentOptions } from './utils/parentSideFilter'
 import { PasswordGate } from './components/auth/PasswordGate'
 import { FamilyTree } from './components/tree/FamilyTree'
 import { BranchFilter } from './components/tree/BranchFilter'
@@ -19,7 +19,7 @@ import './App.css'
 function AppInner({ auth }) {
   const { liveData, setEditingPersonId, draft } = useFamilyData()
   const { token, isEditor, logout } = auth
-  const [activeBranch, setActiveBranch] = useState('all')
+  const [activeSide, setActiveSide] = useState('all')
   const [rootPersonId, setRootPersonId] = useState(null)
   const [ancestorGens, setAncestorGens] = useState(3)
   const [descendantGens, setDescendantGens] = useState(3)
@@ -29,11 +29,21 @@ function AppInner({ auth }) {
   useTreeData(token)
   useAutosave(draft, save, isEditor)
 
+  // Reset side filter when the root person changes (parent options change)
+  useEffect(() => {
+    setActiveSide('all')
+  }, [rootPersonId])
+
+  const parentOptions = useMemo(
+    () => getParentOptions(liveData, rootPersonId),
+    [liveData, rootPersonId]
+  )
+
   const filteredData = useMemo(() => {
     if (!liveData) return null
-    const branched = filterByBranch(liveData, activeBranch)
-    return filterByGeneration(branched, rootPersonId, ancestorGens, descendantGens)
-  }, [liveData, activeBranch, rootPersonId, ancestorGens, descendantGens])
+    const sided = filterByParentSide(liveData, rootPersonId, activeSide)
+    return filterByGeneration(sided, rootPersonId, ancestorGens, descendantGens)
+  }, [liveData, rootPersonId, activeSide, ancestorGens, descendantGens])
 
   const nodes = useMemo(() => toRelNodes(filteredData), [filteredData])
 
@@ -69,12 +79,12 @@ function AppInner({ auth }) {
         <div className="app-header-left">
           <span className="app-title">Family Tree</span>
           <BranchFilter
-            branches={liveData.branches}
-            activeBranch={activeBranch}
-            onChange={setActiveBranch}
+            options={parentOptions}
+            activeSide={activeSide}
+            onChange={setActiveSide}
           />
           <SearchBar
-            activeBranch={activeBranch}
+            activeBranch={activeSide}
             onSelect={(id) => {
               const node = nodes?.find((n) => n.id === id)
               // "Married-in" people (no parents in tree) centre poorly — redirect to
@@ -132,7 +142,6 @@ function AppInner({ auth }) {
             <FamilyTree
               nodes={nodes}
               personById={personById}
-              branches={liveData.branches}
               isEditor={isEditor}
               rootPersonId={rootPersonId}
               controlRef={treeControlRef}
