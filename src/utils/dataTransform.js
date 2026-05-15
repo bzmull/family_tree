@@ -18,6 +18,9 @@ export function transformToRelNodes(data) {
   const parentRels   = relationships.filter((r) => r.type in PARENT_TYPE)
   const siblingRels  = relationships.filter((r) => r.type in SIBLING_TYPE)
 
+  // birthDate is an ISO string ("1988-03-15") — lexicographic sort = chronological order
+  const birthDate = new Map(people.map((p) => [p.id, p.birthDate ?? '9999']))
+
   return people.map((person) => ({
     id: person.id,
     gender: person.gender === 'female' ? 'female' : 'male',
@@ -28,6 +31,7 @@ export function transformToRelNodes(data) {
 
     children: parentRels
       .filter((r) => r.fromId === person.id)
+      .sort((a, b) => (birthDate.get(a.toId) ?? '9999').localeCompare(birthDate.get(b.toId) ?? '9999'))
       .map((r) => ({ id: r.toId, type: PARENT_TYPE[r.type] })),
 
     siblings: siblingRels

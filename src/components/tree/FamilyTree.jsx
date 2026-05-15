@@ -5,8 +5,6 @@ import { formatLifespan } from '../../utils/ageCalculator'
 import { isBridgePerson } from '../../utils/branchFilter'
 import './FamilyTree.css'
 
-// NODE_W / NODE_H define the grid step passed to ReactFamilyTree.
-// Cards are 180px wide; the extra 40px (220-180) gives a 20px gap on each side.
 const NODE_W = 220
 const NODE_H = 120
 
@@ -84,12 +82,10 @@ export function FamilyTree({
 }) {
   const apiRef = useRef(null)
 
-  // Expose zoom API to parent (TreeControls)
   useEffect(() => {
     if (controlRef) controlRef.current = apiRef.current
   })
 
-  // Re-centre whenever the root person changes (search / viewer click)
   useEffect(() => {
     apiRef.current?.centerView(0.8, 400)
   }, [rootPersonId])
@@ -103,8 +99,8 @@ export function FamilyTree({
         maxScale={3}
         initialScale={0.8}
         centerOnInit
-        wheel={{ step: 0.04 }}
         smooth
+        wheel={{ step: 0.03 }}
         doubleClick={{ disabled: true }}
         onInit={(api) => {
           apiRef.current = api

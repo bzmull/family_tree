@@ -11,16 +11,14 @@
   background: #0f172a;
 }
 
-/* The tree canvas — background set via react-zoom-pan-pinch's content div */
+/* The tree canvas */
 .ft-tree {
   background: #0f172a;
 }
 
 /* Connector lines rendered by react-family-tree as <i> elements */
 .ft-tree > i {
-  background: #334155 !important;
-  border-radius: 2px;
-  opacity: 0.8;
+  background: #475569 !important;
 }
 
 /* ── Node card ── */
