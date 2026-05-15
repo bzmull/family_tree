@@ -86,6 +86,14 @@ function AppInner({ auth }) {
         </div>
         <div className="app-header-right">
           <ExportPanel />
+          {isEditor && rootPersonId && (
+            <button
+              className="header-btn header-btn--edit"
+              onClick={() => setEditingPersonId(rootPersonId)}
+            >
+              Edit {personById.get(rootPersonId)?.firstName ?? 'Person'}
+            </button>
+          )}
           {isEditor && (
             <button
               className="header-btn header-btn--add"
@@ -125,8 +133,7 @@ function AppInner({ auth }) {
               rootPersonId={rootPersonId}
               controlRef={treeControlRef}
               onPersonClick={(id) => {
-                if (!isEditor) { setRootPersonId(id); return }
-                setEditingPersonId(id)
+                setRootPersonId(id)
               }}
             />
           </TreeErrorBoundary>
