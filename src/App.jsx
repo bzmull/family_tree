@@ -5,6 +5,7 @@ import { useTreeData, toRelNodes } from './hooks/useTreeData'
 import { useSave } from './hooks/useSave'
 import { useAutosave } from './hooks/useAutosave'
 import { filterByBranch } from './utils/branchFilter'
+import { filterByGeneration } from './utils/generationFilter'
 import { PasswordGate } from './components/auth/PasswordGate'
 import { FamilyTree } from './components/tree/FamilyTree'
 import { BranchFilter } from './components/tree/BranchFilter'
@@ -20,6 +21,8 @@ function AppInner({ auth }) {
   const { token, isEditor, logout } = auth
   const [activeBranch, setActiveBranch] = useState('all')
   const [rootPersonId, setRootPersonId] = useState(null)
+  const [ancestorGens, setAncestorGens] = useState(3)
+  const [descendantGens, setDescendantGens] = useState(3)
   const { save, saving, saveError, lastSavedAt } = useSave(token)
   const treeControlRef = useRef(null)
 
@@ -28,8 +31,9 @@ function AppInner({ auth }) {
 
   const filteredData = useMemo(() => {
     if (!liveData) return null
-    return filterByBranch(liveData, activeBranch)
-  }, [liveData, activeBranch])
+    const branched = filterByBranch(liveData, activeBranch)
+    return filterByGeneration(branched, rootPersonId, ancestorGens, descendantGens)
+  }, [liveData, activeBranch, rootPersonId, ancestorGens, descendantGens])
 
   const nodes = useMemo(() => toRelNodes(filteredData), [filteredData])
 
@@ -147,6 +151,10 @@ function AppInner({ auth }) {
               const rootNode = nodes?.find((n) => !n.parents?.length)
               setRootPersonId(rootNode?.id ?? nodes[0]?.id ?? null)
             }}
+            ancestorGens={ancestorGens}
+            descendantGens={descendantGens}
+            onAncestorGensChange={setAncestorGens}
+            onDescendantGensChange={setDescendantGens}
           />
         </div>
       </div>
