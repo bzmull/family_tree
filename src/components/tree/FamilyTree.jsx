@@ -103,7 +103,8 @@ export function FamilyTree({
         maxScale={3}
         initialScale={0.8}
         centerOnInit
-        wheel={{ step: 0.08 }}
+        wheel={{ step: 0.04 }}
+        smooth
         doubleClick={{ disabled: true }}
         onInit={(api) => {
           apiRef.current = api

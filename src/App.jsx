@@ -38,11 +38,16 @@ function AppInner({ auth }) {
     [filteredData]
   )
 
-  // On first load, centre on the oldest ancestor (no parents in the tree)
+  // On first load, use defaultRootId from data if set; otherwise fall back to oldest ancestor
   useEffect(() => {
     if (!nodes?.length || rootPersonId !== null) return
-    const rootNode = nodes.find((n) => !n.parents?.length)
-    setRootPersonId(rootNode?.id ?? nodes[0]?.id)
+    const preferred = liveData?.defaultRootId
+    if (preferred && nodes.some((n) => n.id === preferred)) {
+      setRootPersonId(preferred)
+    } else {
+      const rootNode = nodes.find((n) => !n.parents?.length)
+      setRootPersonId(rootNode?.id ?? nodes[0]?.id)
+    }
   }, [nodes])
 
   if (!liveData) {
@@ -68,9 +73,10 @@ function AppInner({ auth }) {
             activeBranch={activeBranch}
             onSelect={(id) => {
               const node = nodes?.find((n) => n.id === id)
-              // If person has no children but has a spouse with children (co-parent like
-              // Zahava), centre on the spouse so descendants remain visible.
-              if (!node?.children?.length && node?.spouses?.length) {
+              // "Married-in" people (no parents in tree) centre poorly — redirect to
+              // their spouse who carries the lineage. Reverses automatically once their
+              // own parents are added.
+              if (!node?.parents?.length && node?.spouses?.length) {
                 setRootPersonId(node.spouses[0].id)
               } else {
                 setRootPersonId(id)
