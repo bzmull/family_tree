@@ -23,15 +23,12 @@
   border: 1px solid #334155;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  left: 0;
   list-style: none;
   margin: 0;
   overflow: hidden;
   padding: 0.25rem 0;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  z-index: 100;
+  position: fixed;
+  z-index: 9999;
 }
 
 .sb-result {

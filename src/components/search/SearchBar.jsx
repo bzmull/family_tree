@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import Fuse from 'fuse.js'
 import { useFamilyData } from '../../context/FamilyDataContext'
 import { filterByBranch } from '../../utils/branchFilter'
@@ -18,6 +19,7 @@ export function SearchBar({ activeBranch, onSelect }) {
   const [results, setResults] = useState([])
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
+  const wrapRef = useRef(null)
 
   const search = useCallback((q) => {
     if (!q.trim() || !liveData) { setResults([]); return }
@@ -50,8 +52,10 @@ export function SearchBar({ activeBranch, onSelect }) {
     setTimeout(() => setOpen(false), 150)
   }
 
+  const rect = open && results.length > 0 ? wrapRef.current?.getBoundingClientRect() : null
+
   return (
-    <div className="sb-wrap">
+    <div className="sb-wrap" ref={wrapRef}>
       <input
         ref={inputRef}
         className="sb-input"
@@ -64,8 +68,12 @@ export function SearchBar({ activeBranch, onSelect }) {
         aria-autocomplete="list"
         aria-expanded={open && results.length > 0}
       />
-      {open && results.length > 0 && (
-        <ul className="sb-results" role="listbox">
+      {rect && createPortal(
+        <ul
+          className="sb-results"
+          role="listbox"
+          style={{ top: rect.bottom + 4, left: rect.left, width: rect.width }}
+        >
           {results.map((p) => (
             <li
               key={p.id}
@@ -78,7 +86,8 @@ export function SearchBar({ activeBranch, onSelect }) {
               {p.birthDate && <span className="sb-sub">b. {p.birthDate.slice(0, 4)}</span>}
             </li>
           ))}
-        </ul>
+        </ul>,
+        document.body
       )}
     </div>
   )
