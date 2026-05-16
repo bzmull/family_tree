@@ -12,13 +12,17 @@ import { BranchFilter } from './components/tree/BranchFilter'
 import { TreeControls } from './components/tree/TreeControls'
 import { TreeErrorBoundary } from './components/tree/TreeErrorBoundary'
 import { EditModal } from './components/editor/EditModal'
+import { SuggestionsPanel } from './components/editor/SuggestionsPanel'
 import { SearchBar } from './components/search/SearchBar'
 import { ExportPanel } from './components/export/ExportPanel'
 import './App.css'
 
 function AppInner({ auth }) {
   const { liveData, setEditingPersonId, draft } = useFamilyData()
-  const { token, isEditor, logout } = auth
+  const { token, role, isEditor, logout } = auth
+  const isSuggestion = role === 'viewer'
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
   const [activeSide, setActiveSide] = useState('all')
   const [rootPersonId, setRootPersonId] = useState(null)
   const [ancestorGens, setAncestorGens] = useState(3)
@@ -28,6 +32,16 @@ function AppInner({ auth }) {
 
   useTreeData(token)
   useAutosave(draft, save, isEditor)
+
+  useEffect(() => {
+    if (!isEditor || !token) return
+    const fetchCount = () =>
+      fetch('/.netlify/functions/get-suggestions', { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => { if (d) setPendingCount(d.pendingCount) })
+        .catch(() => {})
+    fetchCount()
+  }, [isEditor, token])
 
   // Reset side filter when the root person changes (parent options change)
   useEffect(() => {
@@ -76,6 +90,7 @@ function AppInner({ auth }) {
   return (
     <div className="app">
       <header className="app-header">
+      <div className="app-header-inner">
         <div className="app-header-left">
           <span className="app-title">Family Tree</span>
           <BranchFilter
@@ -125,6 +140,14 @@ function AppInner({ auth }) {
               {saving ? 'Saving…' : 'Save'}
             </button>
           )}
+          {isEditor && (
+            <button
+              className={`header-btn header-btn--suggestions ${pendingCount > 0 ? 'has-badge' : ''}`}
+              onClick={() => setShowSuggestions(true)}
+            >
+              Suggestions{pendingCount > 0 ? ` (${pendingCount})` : ''}
+            </button>
+          )}
           {draft && !saving && isEditor && (
             <span className="unsaved-status">Unsaved changes</span>
           )}
@@ -134,6 +157,7 @@ function AppInner({ auth }) {
           {saveError && <span className="save-error">{saveError}</span>}
           <button className="header-btn" onClick={logout}>Sign out</button>
         </div>
+      </div>
       </header>
 
       <div className="app-body">
@@ -146,7 +170,11 @@ function AppInner({ auth }) {
               rootPersonId={rootPersonId}
               controlRef={treeControlRef}
               onPersonClick={(id) => {
-                setRootPersonId(id)
+                if (isSuggestion) {
+                  setEditingPersonId(id)
+                } else {
+                  setRootPersonId(id)
+                }
               }}
             />
           </TreeErrorBoundary>
@@ -167,7 +195,15 @@ function AppInner({ auth }) {
           />
         </div>
       </div>
-      <EditModal />
+      <EditModal role={role} token={token} />
+      {showSuggestions && (
+        <SuggestionsPanel
+          token={token}
+          liveData={liveData}
+          onClose={() => setShowSuggestions(false)}
+          onCountChange={setPendingCount}
+        />
+      )}
     </div>
   )
 }

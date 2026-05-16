@@ -25,21 +25,28 @@ body {
 }
 
 .app-header {
-  align-items: center;
   background: #1e293b;
   border-bottom: 1px solid #334155;
-  display: flex;
   flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-header-inner {
+  align-items: center;
+  display: flex;
   gap: 1rem;
   justify-content: space-between;
+  min-width: max-content;
   padding: 0.6rem 1rem;
+  width: 100%;
 }
 
 .app-header-left {
   align-items: center;
   display: flex;
+  flex-shrink: 0;
   gap: 1rem;
-  min-width: 0;
 }
 
 .app-header-right {
@@ -92,6 +99,8 @@ body {
 .header-btn--add:hover { background: #1e6fbf; color: #fff; }
 .header-btn--save { background: #7c3aed; border-color: #6d28d9; }
 .header-btn--save:hover:not(:disabled) { background: #6d28d9; }
+.header-btn--suggestions { background: #334155; border-color: #475569; }
+.header-btn--suggestions.has-badge { background: #4c1d95; border-color: #7c3aed; color: #c4b5fd; }
 
 .save-status { color: #34d399; font-size: 0.78rem; }
 .save-error { color: #f87171; font-size: 0.78rem; }
