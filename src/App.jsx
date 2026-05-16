@@ -123,6 +123,14 @@ function AppInner({ auth }) {
               Edit {personById.get(rootPersonId)?.firstName ?? 'Person'}
             </button>
           )}
+          {isSuggestion && rootPersonId && (
+            <button
+              className="header-btn"
+              onClick={() => setEditingPersonId(rootPersonId)}
+            >
+              Suggest edit — {personById.get(rootPersonId)?.firstName ?? 'Person'}
+            </button>
+          )}
           {isEditor && (
             <button
               className="header-btn header-btn--add"
@@ -169,13 +177,8 @@ function AppInner({ auth }) {
               isEditor={isEditor}
               rootPersonId={rootPersonId}
               controlRef={treeControlRef}
-              onPersonClick={(id) => {
-                if (isSuggestion) {
-                  setEditingPersonId(id)
-                } else {
-                  setRootPersonId(id)
-                }
-              }}
+              onPersonClick={(id) => setRootPersonId(id)}
+              onPersonDoubleClick={(id) => setEditingPersonId(id)}
             />
           </TreeErrorBoundary>
         </div>

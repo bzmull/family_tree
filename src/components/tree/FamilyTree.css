@@ -30,12 +30,12 @@
   border-radius: 8px;
   cursor: pointer;
   display: flex;
-  gap: 0.5rem;
-  padding: 0.5rem 0.6rem;
+  gap: 0.4rem;
+  padding: 0.5rem 0.5rem;
   position: relative;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-  width: 180px;
-  min-height: 64px;
+  width: 140px;
+  min-height: 72px;
 }
 
 .ft-node:hover {
@@ -57,13 +57,13 @@
   border-radius: 50%;
   display: flex;
   flex-shrink: 0;
-  height: 38px;
+  height: 34px;
   justify-content: center;
-  width: 38px;
+  width: 34px;
 }
 
 .ft-initials {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -75,9 +75,13 @@
 
 .ft-name {
   color: #f1f5f9;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
+  overflow: hidden;
+}
+
+.ft-name div {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

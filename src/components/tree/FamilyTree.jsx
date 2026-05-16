@@ -5,8 +5,8 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { formatLifespan } from '../../utils/ageCalculator'
 import './FamilyTree.css'
 
-const NODE_W = 220
-const NODE_H = 120
+const NODE_W = 170
+const NODE_H = 130
 
 function getInitials(person) {
   const first = (person.firstName ?? '')[0] ?? ''
@@ -14,7 +14,7 @@ function getInitials(person) {
   return (first + last).toUpperCase()
 }
 
-function PersonCard({ node, personById, isEditor, onPersonClick }) {
+function PersonCard({ node, personById, isEditor, onPersonClick, onPersonDoubleClick }) {
   const person = personById.get(node.id)
 
   const style = {
@@ -43,7 +43,11 @@ function PersonCard({ node, personById, isEditor, onPersonClick }) {
   const hasPrivate   = isEditor && Object.values(person.private ?? {}).some(Boolean)
 
   return (
-    <div style={style} onClick={() => onPersonClick(node.id)}>
+    <div
+      style={style}
+      onClick={() => onPersonClick(node.id)}
+      onDoubleClick={() => onPersonDoubleClick?.(node.id)}
+    >
       <div className="ft-node" style={{ '--node-color': avatarBorder }}>
         <div
           className="ft-avatar"
@@ -52,7 +56,10 @@ function PersonCard({ node, personById, isEditor, onPersonClick }) {
           <span className="ft-initials" style={{ color: avatarBorder }}>{initials}</span>
         </div>
         <div className="ft-info">
-          <div className="ft-name">{person.firstName ?? ''} {person.lastName ?? ''}</div>
+          <div className="ft-name">
+            <div>{person.firstName ?? ''}</div>
+            <div>{person.lastName ?? ''}</div>
+          </div>
           {lifespan && <div className="ft-lifespan">{lifespan}</div>}
         </div>
         {hasPrivate && <div className="ft-lock">🔒</div>}
@@ -72,6 +79,7 @@ export function FamilyTree({
   isEditor,
   rootPersonId,
   onPersonClick,
+  onPersonDoubleClick,
   controlRef,
 }) {
   const apiRef = useRef(null)
@@ -144,6 +152,7 @@ export function FamilyTree({
                   personById={personById}
                   isEditor={isEditor}
                   onPersonClick={onPersonClick}
+                  onPersonDoubleClick={onPersonDoubleClick}
                 />
               )}
             />
@@ -167,7 +176,7 @@ export function FamilyTree({
                   const dist = Math.sqrt(dx * dx + dy * dy)
                   const ux = dx / dist
                   const uy = dy / dist
-                  const margin = 90
+                  const margin = 70
                   return (
                     <line
                       key={`${a.id}|${b.id}`}
