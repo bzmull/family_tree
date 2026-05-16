@@ -9,6 +9,7 @@ const REL_TYPES = [
   { value: 'parent-child', label: 'Parent of' },
   { value: 'adoptive-parent-child', label: 'Adoptive parent of' },
   { value: 'step-parent', label: 'Step-parent of' },
+  { value: 'child-of', label: 'Child of' },
   { value: 'spouse', label: 'Spouse / Partner' },
   { value: 'half-sibling', label: 'Half-sibling' },
   { value: 'sibling', label: 'Sibling' },
@@ -76,11 +77,12 @@ export function RelationshipEditor({ personId, personName, externalRels, onExter
 
   function handleAdd() {
     if (!selectedId) return
+    const isChildOf = relType === 'child-of'
     const rel = {
       id: `r_${Date.now()}`,
-      type: relType,
-      fromId: personId,
-      toId: selectedId,
+      type: isChildOf ? 'parent-child' : relType,
+      fromId: isChildOf ? selectedId : personId,
+      toId:   isChildOf ? personId   : selectedId,
       ...(relType === 'spouse' ? {
         marriageDate: marriageDate || null,
         divorceDate: divorceDate || null,
@@ -184,6 +186,7 @@ export function RelationshipEditor({ personId, personName, externalRels, onExter
                   onClick={() => { setSelectedId(p.id); setSearch(`${p.firstName} ${p.lastName}`) }}
                 >
                   {p.firstName} {p.lastName}
+                  {p.birthDate && <span style={{ opacity: 0.5, fontSize: '0.75rem', marginLeft: '0.35rem' }}>b. {p.birthDate.slice(0, 4)}</span>}
                 </button>
               ))}
             </div>
