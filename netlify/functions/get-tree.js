@@ -17,9 +17,9 @@ function stripPrivateFields(data, role) {
       if (isPrivate) delete sanitized[field]
     }
 
-    // birthDate on living people is private by default unless explicitly set to false
+    // birthDate on living people: show year only (not full date) unless editor explicitly made it public
     if (person.isLiving && privateFlags.birthDate !== false) {
-      delete sanitized.birthDate
+      sanitized.birthDate = person.birthDate ? person.birthDate.slice(0, 4) : null
     }
 
     return sanitized
