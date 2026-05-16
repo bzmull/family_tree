@@ -5,7 +5,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { formatLifespan } from '../../utils/ageCalculator'
 import './FamilyTree.css'
 
-const NODE_W = 170
+const NODE_W = 155
 const NODE_H = 130
 
 function getInitials(person) {
@@ -43,12 +43,13 @@ function PersonCard({ node, personById, isEditor, onPersonClick, onPersonDoubleC
   const hasPrivate   = isEditor && Object.values(person.private ?? {}).some(Boolean)
 
   return (
-    <div
-      style={style}
-      onClick={() => onPersonClick(node.id)}
-      onDoubleClick={() => onPersonDoubleClick?.(node.id)}
-    >
-      <div className="ft-node" style={{ '--node-color': avatarBorder }}>
+    <div style={style}>
+      <div
+        className="ft-node"
+        style={{ '--node-color': avatarBorder }}
+        onClick={() => onPersonClick(node.id)}
+        onDoubleClick={() => onPersonDoubleClick?.(node.id)}
+      >
         <div
           className="ft-avatar"
           style={{ background: avatarBg, borderColor: avatarBorder, borderRadius: avatarRadius }}
@@ -176,7 +177,7 @@ export function FamilyTree({
                   const dist = Math.sqrt(dx * dx + dy * dy)
                   const ux = dx / dist
                   const uy = dy / dist
-                  const margin = 70
+                  const margin = 62
                   return (
                     <line
                       key={`${a.id}|${b.id}`}

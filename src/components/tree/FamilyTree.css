@@ -34,7 +34,7 @@
   padding: 0.5rem 0.5rem;
   position: relative;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-  width: 140px;
+  width: 125px;
   min-height: 72px;
 }
 
